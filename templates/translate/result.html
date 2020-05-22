@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+      function SelectText(elementId) {
+          var text = document.getElementById(elementId);
+          var selection = window.getSelection();
+          var range = document.createRange();
+          range.selectNodeContents(text);
+          selection.removeAllRanges();
+          selection.addRange(range);
+      }
+    </script>
+</head>
+<body>
+
+{% if data_list|length > 0 %}
+    <input type="button" value="一键选中" onclick="SelectText('result')"><br>
+{% endif %}
+
+<div id="result">
+    {% for k, v in data_list.items %}
+    <span style="font-size:10.5px; color:#000FFF">{{ k }} </span>&nbsp;{% for mean in v.parts %}<span style="font-size:10.5px">{{ mean.part }} {% for m in mean.means %} {{ m }}；&nbsp; {% endfor %}</span>{% endfor %}<br>
+    {% endfor %}
+</div>
+<br>
+    <hr>
+<br>
+
+{% if data_list|length > 0 %}
+    <input type="button" value="一键选中" onclick="SelectText('result2')"><br>
+{% endif %}
+
+<ul id="result2">
+    {% for k, v in data_list.items %}
+    <li style="font-size:10.5px; color:#000FFF">{{ k }} {% if v.ph_en %}【英】{{ v.ph_en }}{% endif %} {% if v.ph_am %}【美】{{ v.ph_am }}{% endif %}</li>
+    <ul>
+        {% for mean in v.parts %}
+        <li style="font-size:10.5px">{{ mean.part }} {% for m in mean.means %} {{ m }}； {% endfor %}</li>
+        {% endfor %}
+        {% if res.memory %}
+        <li style="font-size:10.5px; color:#FF0000">【记忆技巧】{{ res.memory }}</li>
+        {% endif %}
+    </ul>
+    {% endfor %}
+</ul>
+</body>
+</html>
+
+

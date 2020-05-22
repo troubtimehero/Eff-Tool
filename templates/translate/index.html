@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% block title %}单词选译{% endblock %}
+{% block content %}
+    <script>
+        var lastInsertId = null;
+		function insertWord(word, id){
+			var li = document.getElementById("l"+id);
+			if(li)
+			{
+				li.parentNode.removeChild(li);
+				return false;
+			}
+
+			if(lastInsertId && event.ctrlKey){
+//			    var li = document.getElementById(lastInsertId);
+//				li.innerHTML = li.innerHTML + " " + word;
+                var input = document.getElementById(lastInsertId);
+                input.value = input.value + " " + word.trim();
+			}
+			else {
+//				var li = document.createElement("li");
+//				li.id = "l"+id;
+//				lastInsertId = li.id;
+//				li.value = word;
+//				li.name = li.id;
+//				li.style = "width:100%";
+//                li.innerHTML = word;
+//				document.getElementById("wordList").appendChild(li);
+                var input = document.createElement("input");
+                input.id = "l"+id;
+                lastInsertId = input.id;
+                input.value = word.trim();
+                input.name = input.id;
+                input.style = "width:50%; font-size:20px;";
+				document.getElementById("wordList").appendChild(input);
+			}
+
+			return true;
+		}
+		
+		function onClick(){
+			word = this.innerText;
+			if(word.search(/\w/g) < 0)
+				return;
+			word = word.replace(/[\?!\.,;:\\]/g, "");
+			if(insertWord(word, this.id))
+				this.style.color = "#FF0000"
+			else
+				this.style.color = "#000000"
+		}
+
+        var regex = /[\u4E00-\u9FA5\uF900-\uFA2D]/;
+        function createSelector(){
+    	    var article = document.getElementById("article");
+			var text = article.value;
+
+			if(regex.test(text)) {
+			    var se = confirm("只支持英文翻译，是否把中文去掉？")
+			    if(se) {
+			        text = testChinese(text);
+			    }
+			    else {
+			        return;
+			    }
+			}
+
+			text = chineseChar2englishChar(text);
+			text = text.replace(/\n/gm, " ");
+			text = text.replace("\r", " ");
+			text = text.replace("\f", " ");
+			text = text.replace("\t", " ");
+			text = text.replace("/n", " ");
+			text = text.replace(/,/g, ", ");
+			text = text.replace(/\./g, ". ");
+			text = text.replace(/\?/g, "? ");
+			text = text.replace(/!/g, "! ");
+			text = text.replace(/;/g, "; ");
+
+    	    var selector = document.getElementById("selector");
+			children = selector.childNodes;
+			for(let i = children.length-1; i>=0; i--)
+				selector.removeChild(children[i])
+
+			
+			var newText = text.split(" ");
+			for(let i=0; i<newText.length; i++)
+			{
+				if(newText[i].search(/\S/) < 0)
+					continue;
+				var s = document.createElement("span");
+				var t = document.createTextNode(newText[i] + " ");
+				s.id = "s_" + i;
+				s.addEventListener("click", onClick);
+				s.appendChild(t);
+				selector.appendChild(s);
+			}
+        }
+
+
+        "use strict";
+        function a(r) {
+            if (Array.isArray(r)) {
+                for (var o = 0, t = Array(r.length); o < r.length; o++)t[o] = r[o];
+                return t
+            } return Array.from(r)
+        }
+
+        "use strict";
+        function n(r, o) {
+            for (var t = 0; t < o.length - 2; t += 3) {
+                var a = o.charAt(t + 2); a = a >= "a" ? a.charCodeAt(0) - 87 : Number(a), a = "+" === o.charAt(t + 1) ? r >>> a : r << a, r = "+" === o.charAt(t) ? r + a & 4294967295 : r ^ a
+            } return r
+        }
+
+        "use strict";
+        function e(r) {
+            var i = null;
+            var o = r.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g);
+            if (null === o) {
+                var t = r.length;
+                t > 30 && (r = "" + r.substr(0, 10) + r.substr(Math.floor(t / 2) - 5, 10) + r.substr(-10, 10))
+            }
+            else {
+                for (var e = r.split(/[\uD800-\uDBFF][\uDC00-\uDFFF]/), C = 0, h = e.length, f = []; h > C; C++)
+                    "" !== e[C] && f.push.apply(f, a(e[C].split(""))), C !== h - 1 && f.push(o[C]);
+                var g = f.length;
+                g > 30 && (r = f.slice(0, 10).join("") + f.slice(Math.floor(g / 2) - 5, Math.floor(g / 2) + 5).join("") + f.slice(-10).join(""))
+            }
+            var u = void 0, l = "" + String.fromCharCode(103) + String.fromCharCode(116) + String.fromCharCode(107);
+			// u = null !== i ? i : (i = window[l] || "") || "";
+			u = null !== i ? i : (i = '320305.131321201' || "") || "";
+            for (var d = u.split("."), m = Number(d[0]) || 0, s = Number(d[1]) || 0, S = [], c = 0, v = 0; v < r.length; v++) {
+                var A = r.charCodeAt(v);
+                128 > A ? S[c++] = A : (2048 > A ? S[c++] = A >> 6 | 192 : (55296 === (64512 & A) && v + 1 < r.length && 56320 === (64512 & r.charCodeAt(v + 1)) ? (A = 65536 + ((1023 & A) << 10) + (1023 & r.charCodeAt(++v)), S[c++] = A >> 18 | 240, S[c++] = A >> 12 & 63 | 128) : S[c++] = A >> 12 | 224, S[c++] = A >> 6 & 63 | 128), S[c++] = 63 & A | 128)
+            }
+            for (var p = m, F = "" + String.fromCharCode(43) + String.fromCharCode(45) + String.fromCharCode(97) + ("" + String.fromCharCode(94) + String.fromCharCode(43) + String.fromCharCode(54)), D = "" + String.fromCharCode(43) + String.fromCharCode(45) + String.fromCharCode(51) + ("" + String.fromCharCode(94) + String.fromCharCode(43) + String.fromCharCode(98)) + ("" + String.fromCharCode(43) + String.fromCharCode(45) + String.fromCharCode(102)), b = 0; b < S.length; b++)
+                p += S[b], p = n(p, F);
+            return p = n(p, D), p ^= s, 0 > p && (p = (2147483647 & p) + 2147483648), p %= 1e6, p.toString() + "." + (p ^ m)
+        }
+
+
+		function createForm(){
+
+		    var form = document.getElementById("wordList");
+		    children = form.getElementsByTagName("input");
+		    if(children.length > 1) {
+                tim = 6;
+                form.submit();
+            }
+            document.querySelector("#result").focus();
+		}
+
+
+        var tim=1;
+        function waitNext(){
+            var btnn=document.getElementById("btnTranslate");
+            if(tim<=0)
+            {
+                btnn.value="获取翻译";
+                btnn.disabled="";
+            }
+            else
+            {
+                btnn.value="DC " + tim;
+                btnn.disabled="yes";
+                tim--;
+            }
+        }
+
+        setInterval("waitNext()",1000);
+    </script>
+<div id="inputfield" style="width:100%; height:150px; font-size:20px;">
+    <textarea id="article" style="width:100%; height:95%; background-color:#FFFFFF" placeholder="请把文章粘贴到这里..."></textarea>
+</div>
+<button onclick="createSelector()">生成可选择内容</button>
+<br><span style="color:#AAAAAA">Tips: 按住Ctrl多选即可翻译词组短语，暂不支持触屏设备</span>
+<br>
+<div id="selector" style="font-size:20px; border:1px #000000 solid; width:70%; height:350px; float:left; overflow:auto; background-color:#FAFAFA">
+</div>
+<div style="border:1px #000000 solid; width:25%; height:350px; float:left; overflow:auto; background-color:#FAFAFA; margin-left:10px">
+<form id="wordList" method="post" target="result_iframe">
+    {% csrf_token %}
+<button id="btnTranslate" style="width:100%" onclick="createForm()">获取翻译，请耐心等待</button><br>
+</form>
+</div>
+<a href="#inputfield" style="position: fixed; left: 0; bottom: 0">回到顶部</a>
+<div id="result" style="width:100%; height:500px; overflow:auto; background-color:#FFFFFF" tabindex="2">
+    <iframe name="result_iframe" style="width:95%; height:95%" scrolling="yes" frameborder="0"></iframe>
+</div>
+<form id="wordSignForm"  hidden="yes">
+    {% csrf_token %}
+</form>
+
+<script>
+      function chineseChar2englishChar(chineseChar){
+          // 将单引号‘’都转换成'，将双引号“”都转换成"
+          var str = chineseChar.replace(/\’|\‘/g,"'").replace(/\“|\”/g,"\"");
+          // 将中括号【】转换成[]，将大括号｛｝转换成{}
+          str = str.replace(/\【/g,"[").replace(/\】/g,"]").replace(/\｛/g,"{").replace(/\｝/g,"}");
+          // 将逗号，转换成,，将：转换成:，将；转换成;，将。转换成.，
+          str = str.replace(/，/g,",").replace(/：/g,":").replace(/。/g,".");
+          // 将？转换成?，将！转换成!，
+          str = str.replace(/？/g,"?").replace(/！/g,"!");
+          return str;
+      };
+      function testChinese(text) {
+          // 用于临时存储单字符
+          var chinese = "";
+          // 用于校验是否是中文
+          var flag = false;
+          // 用于存储过滤后的文件名
+          var filterChinese = "";
+          for (var i=0; i < text.length; i++) {
+              chinese = text.substring(i, i+1);
+              flag = regex.test(chinese);
+              // 该字符不是中文
+              if(!flag) {
+                  filterChinese += chinese;
+              }
+          }
+          // 过滤掉中文后的文件名
+          return filterChinese;
+      }
+
+</script>
+{% endblock %}
