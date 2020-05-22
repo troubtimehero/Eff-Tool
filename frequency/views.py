@@ -27,19 +27,19 @@ def index(request):
 
         obj = Words20000.objects.all()  # .distinct()
         if contain:
-            obj = obj.filter(word__icontains=contain)
+            obj = obj.filter(word__regex=r'%s' % contain)
         if begin:
-            obj = obj.filter(word__istartswith=begin)
+            obj = obj.filter(word__regex=r'^%s' % begin)
         if end:
-            obj = obj.filter(word__iendswith=end)
+            obj = obj.filter(word__regex=r'%s$' % end)
 
         if len_max > 0:
             if len_min > len_max:
                 len_min, len_max = len_max, len_min
             if len_max >= len(begin) and len_max >= len(end) and len_max >= len(contain):
-                obj = obj.filter(word__regex=r'[\S]{%s,%s}' % (len_min, len_max))
+                obj = obj.filter(word__regex=r'^[\S]{%s,%s}$' % (len_min, len_max))
         elif len_min > 0:
-            obj = obj.filter(word__regex=r'[\S]{%s,}' % len_min)
+            obj = obj.filter(word__regex=r'^[\S]{%s,}$' % len_min)
 
         message = '共找到 %d 个单词' % obj.count()
         return render(request, 'frequency/index.html', {'words': obj, 'message': message})
